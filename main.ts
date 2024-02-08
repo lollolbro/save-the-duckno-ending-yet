@@ -4,8 +4,9 @@ namespace SpriteKind {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     statusbar.value += -1
 })
+let ending = 0
 let statusbar: StatusBarSprite = null
-let area_3 = 1
+let area_3 = 0
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999111111111119999999999999999999999999999999999999991111999999999999999999999999999999999999999999111111111111
@@ -131,6 +132,7 @@ scene.setBackgroundImage(img`
 game.showLongText("you needed food so you stole from a guy you don't know", DialogLayout.Top)
 game.showLongText("he caught you so now steal the rest and run away ", DialogLayout.Top)
 game.showLongText("don't lose all your hp", DialogLayout.Top)
+info.setScore(0)
 let mySprite = sprites.create(img`
     . . . . . . . . . . b 5 b . . . 
     . . . . . . . . . b 5 b . . . . 
@@ -181,7 +183,24 @@ let health = statusbars.create(20, 6, StatusBarKind.Health)
 myEnemy.setVelocity(20, 20)
 myEnemy.follow(mySprite, 32)
 myEnemy.setPosition(135, 43)
-let item = sprites.create(assets.image`chicken`, SpriteKind.Food)
+let item = sprites.create(img`
+    . . 2 2 b b b b b . . . . . . . 
+    . 2 b 4 4 4 4 4 4 b . . . . . . 
+    2 2 4 4 4 4 d d 4 4 b . . . . . 
+    2 b 4 4 4 4 4 4 d 4 b . . . . . 
+    2 b 4 4 4 4 4 4 4 d 4 b . . . . 
+    2 b 4 4 4 4 4 4 4 4 4 b . . . . 
+    2 b 4 4 4 4 4 4 4 4 4 e . . . . 
+    2 2 b 4 4 4 4 4 4 4 b e . . . . 
+    . 2 b b b 4 4 4 b b b e . . . . 
+    . . e b b b b b b b e e . . . . 
+    . . . e e b 4 4 b e e e b . . . 
+    . . . . . e e e e e e b d b b . 
+    . . . . . . . . . . . b 1 1 1 b 
+    . . . . . . . . . . . c 1 d d b 
+    . . . . . . . . . . . c 1 b c . 
+    . . . . . . . . . . . . c c . . 
+    `, SpriteKind.Food)
 item.setPosition(randint(15, 145), randint(20, 100))
 let picture = 1
 forever(function () {
@@ -673,8 +692,6 @@ forever(function () {
         sprites.destroy(item)
         sprites.destroy(health)
         sprites.destroy(statusbar)
-        game.showLongText("you successfully stole all his food ", DialogLayout.Bottom)
-        game.showLongText("so you ran away but he followed you ", DialogLayout.Bottom)
         scene.setBackgroundImage(img`
             3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
             3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
@@ -797,6 +814,10 @@ forever(function () {
             dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
             dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
             `)
+        info.changeScoreBy(1)
+        game.showLongText("you successfully stole all his food ", DialogLayout.Bottom)
+        game.showLongText("but now you in a time loop", DialogLayout.Bottom)
+        game.showLongText("how far can you go?", DialogLayout.Bottom)
         mySprite = sprites.create(img`
             . . . . . . . . . . b 5 b . . . 
             . . . . . . . . . b 5 b . . . . 
@@ -847,9 +868,31 @@ forever(function () {
         myEnemy.setVelocity(20, 20)
         myEnemy.follow(mySprite, 40)
         myEnemy.setPosition(135, 43)
-        item = sprites.create(assets.image`chicken`, SpriteKind.Food)
+        item = sprites.create(img`
+            . . 2 2 b b b b b . . . . . . . 
+            . 2 b 4 4 4 4 4 4 b . . . . . . 
+            2 2 4 4 4 4 d d 4 4 b . . . . . 
+            2 b 4 4 4 4 4 4 d 4 b . . . . . 
+            2 b 4 4 4 4 4 4 4 d 4 b . . . . 
+            2 b 4 4 4 4 4 4 4 4 4 b . . . . 
+            2 b 4 4 4 4 4 4 4 4 4 e . . . . 
+            2 2 b 4 4 4 4 4 4 4 b e . . . . 
+            . 2 b b b 4 4 4 b b b e . . . . 
+            . . e b b b b b b b e e . . . . 
+            . . . e e b 4 4 b e e e b . . . 
+            . . . . . e e e e e e b d b b . 
+            . . . . . . . . . . . b 1 1 1 b 
+            . . . . . . . . . . . c 1 d d b 
+            . . . . . . . . . . . c 1 b c . 
+            . . . . . . . . . . . . c c . . 
+            `, SpriteKind.Food)
         item.setPosition(randint(15, 145), randint(20, 100))
+        picture = 23
+        ending = 2
     }
+})
+forever(function () {
+	
 })
 forever(function () {
     if (statusbar.value == 0) {
@@ -983,12 +1026,18 @@ forever(function () {
 })
 forever(function () {
     if (health.value == 0) {
+        area_3 += 1
         picture += -1
-        area_3 += -1
     }
 })
 forever(function () {
-    if (health.value == -2) {
+    if (mySprite.overlapsWith(item)) {
+        health.value += -5
+        item.setPosition(randint(15, 145), randint(20, 100))
+    }
+})
+forever(function () {
+    if (area_3 == 1) {
         game.showLongText("you got away ", DialogLayout.Bottom)
         sprites.destroy(mySprite)
         sprites.destroy(statusbar)
@@ -1117,12 +1166,6 @@ forever(function () {
             1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
             1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
             `)
-    }
-})
-forever(function () {
-    if (mySprite.overlapsWith(item)) {
-        health.value += -5
-        item.setPosition(randint(15, 145), randint(20, 100))
     }
 })
 game.onUpdateInterval(200, function () {
